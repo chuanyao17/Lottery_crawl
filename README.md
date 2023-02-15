@@ -7,5 +7,8 @@ Auto applying for the lottery at BROADWAY DIRECT.
 3. Add another account's information to accounts.txt if you have more than one account.
 4. Edited the lottery_website.txt if needed.
 
+### Warning
+The ReCaptcha detected feature was only tested when applying the lion king, and the checkbox can be confirmed automatically.
+However, if the 3x3  image identification came out, you would have to handle it manually.
 
 
