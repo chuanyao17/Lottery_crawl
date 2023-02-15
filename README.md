@@ -9,7 +9,6 @@ Auto applying for the lottery at BROADWAY DIRECT.
 
 ### Warning
 The ReCaptcha detected feature was only tested when applying the Lion King.(The checkbox can be confirmed automatically.)
-
 However, if the 3x3  image identification came out, you would have to handle it manually.
 
 
