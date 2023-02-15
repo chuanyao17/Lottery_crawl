@@ -1,6 +1,13 @@
 # Lottery_crawl
 Auto applying for the lottery at BROADWAY DIRECT.
 
+
+The repository has the following requirements:
+
+ - `undetected_chromedriver`
+ - `selenium`
+
+
 ### Before running this program in Python, 
 1. Create the account at https://broadwaydirect.com/
 2. Fill out the **accounts.txt** with the information of the created account.
