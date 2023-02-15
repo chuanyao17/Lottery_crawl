@@ -2,7 +2,7 @@
 Auto applying for the lottery at BROADWAY DIRECT.
 
 
-The repository has the following requirements:
+### The repository has the following requirements:
 
  - `undetected_chromedriver`
  - `selenium`
