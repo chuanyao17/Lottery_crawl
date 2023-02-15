@@ -1,12 +1,9 @@
 import time
 import undetected_chromedriver as uc
 import json
-# from selenium import webdriver
-# from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait as wait
 from selenium.webdriver.support import expected_conditions as EC
-# from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver import ActionChains
 
@@ -66,17 +63,6 @@ def main():
         
 
 website_list=read_file('lottery_website.txt')   
-# website_list=read_file('test.txt')   
 accounts_info=read_file('accounts.txt')
 driver = uc.Chrome() 
 main()
-
-    
-    
-
-    # location = check_mark.location
-    # size = check_mark.size
-    # w, h = size['width'], size['height']
-    # print(location)
-    # print(size)
-    # print(w, h)
