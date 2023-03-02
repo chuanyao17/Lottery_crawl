@@ -11,8 +11,8 @@ Auto applying for the lottery at BROADWAY DIRECT.
 ### Before running this program in Python, 
 ~~1. Create an account at https://broadwaydirect.com/~~
 
-2. Fill out the **accounts.txt** with the information of the created account.
-3. Add another account's information to accounts.txt if you have more than one account.
+2. Fill out the **accounts.txt** with the applicant's information.
+3. Add another applicant's information to accounts.txt if you have more than one applicant.
 4. Edited the **lottery_website.txt** if needed.
 
 ### Warning
