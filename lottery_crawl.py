@@ -65,7 +65,7 @@ def main():
     for website in website_list:
         print(website)
         driver.get(website)
-        time.sleep(1)
+        time.sleep(5)
         driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
         time.sleep(1)
         for account in accounts_info:
@@ -76,7 +76,6 @@ website_list=read_file('lottery_website.txt')
 # website_list=read_file('test.txt')   
 accounts_info=read_file('accounts.txt')
 driver = uc.Chrome() 
-time.sleep(5)
 main()
 
     
