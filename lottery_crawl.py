@@ -1,9 +1,12 @@
 import time
 import undetected_chromedriver as uc
 import json
+# from selenium import webdriver
+# from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait as wait
 from selenium.webdriver.support import expected_conditions as EC
+# from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver import ActionChains
 
@@ -46,6 +49,13 @@ def apply_lottery(account):
                 driver.switch_to.parent_frame()
             except:
                 pass
+
+            # try:
+            #     iframe_locator = driver.find_element(By.XPATH, '//iframe[@title="recaptcha challenge expires in two minutes"]')
+            #     driver.switch_to.default_content()
+            #     driver.find_element(By.CLASS_NAME,'fancybox-item.fancybox-close').click()
+            # except:
+            #     pass
            
             driver.find_element(By.CLASS_NAME,'btn.btn-primary').click()
             driver.switch_to.default_content()
@@ -63,6 +73,18 @@ def main():
         
 
 website_list=read_file('lottery_website.txt')   
+# website_list=read_file('test.txt')   
 accounts_info=read_file('accounts.txt')
 driver = uc.Chrome() 
+time.sleep(5)
 main()
+
+    
+    
+
+    # location = check_mark.location
+    # size = check_mark.size
+    # w, h = size['width'], size['height']
+    # print(location)
+    # print(size)
+    # print(w, h)
