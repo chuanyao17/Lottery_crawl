@@ -45,18 +45,21 @@ def apply_lottery(account):
                 recaptcha=driver.find_element(By.XPATH,'//*[@id="post-81"]/div/form/fieldset/div[1]/div/div/iframe')
                 driver.switch_to.frame(recaptcha)
                 driver.find_element(By.CLASS_NAME,'recaptcha-checkbox-border').click()
-                time.sleep(11)
-                driver.switch_to.parent_frame()
+                try:
+                    print("test the check box and wait")
+                    recaptcha_9x9=driver.find_element(By.XPATH,'/html/body/div[2]/div[2]/iframe')
+                    driver.switch_to.frame(recaptcha_9x9)
+                    driver.find_element(By.ID, 'recaptcha-verify-button').click()
+       
+                    driver.switch_to.default_content()
+                except:
+                    time.sleep(5)
+                    driver.switch_to.parent_frame()
+                    
+                
             except:
                 pass
-
-            # try:
-            #     iframe_locator = driver.find_element(By.XPATH, '//iframe[@title="recaptcha challenge expires in two minutes"]')
-            #     driver.switch_to.default_content()
-            #     driver.find_element(By.CLASS_NAME,'fancybox-item.fancybox-close').click()
-            # except:
-            #     pass
-           
+            time.sleep(4)
             driver.find_element(By.CLASS_NAME,'btn.btn-primary').click()
             driver.switch_to.default_content()
             driver.find_element(By.CLASS_NAME,'fancybox-item.fancybox-close').click()
