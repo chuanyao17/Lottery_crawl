@@ -1,12 +1,7 @@
 import time
 import undetected_chromedriver as uc
 import json
-# from selenium import webdriver
-# from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait as wait
-from selenium.webdriver.support import expected_conditions as EC
-# from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver import ActionChains
 
@@ -22,8 +17,11 @@ def apply_lottery(account):
     first_name,last_name,email,month,day,year=account.values()
     print(first_name,last_name,email,month,day,year)
     
+    # find the valid entry only for the desktop
     for desktop in driver.find_elements(By.CLASS_NAME,'row.lotteries-row.hide-for-tablets.show-for-desktop'):
         for button in desktop.find_elements(By.CLASS_NAME,'btn.btn-primary.enter-button.enter-lottery-link'):
+            
+            # process the application
             button.click()
             driver.switch_to.frame(driver.find_element(By.CLASS_NAME,'fancybox-iframe'))
             driver.find_element(By.ID,'dlslot_name_first').send_keys(first_name)
@@ -36,30 +34,34 @@ def apply_lottery(account):
             driver.find_element(By.ID,'dlslot_zip').send_keys('11101')
             Select(driver.find_element(By.ID, 'dlslot_country')).select_by_value("2")
             
+            # hit the check box and wait for the recaptcha
             driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
             time.sleep(1)
             check_mark = driver.find_element(By.XPATH,'/html/body/div/main/article/div/form/fieldset/p[8]/label')
+            # align the check box to the right
             ActionChains(driver).move_to_element_with_offset(check_mark,-50,0).click().perform()
             
+            #  hit the recaptcha if existed
             try:
                 recaptcha=driver.find_element(By.XPATH,'//*[@id="post-81"]/div/form/fieldset/div[1]/div/div/iframe')
                 driver.switch_to.frame(recaptcha)
                 driver.find_element(By.CLASS_NAME,'recaptcha-checkbox-border').click()
+                
+                # try to skip the second recaptcha for 9x9 image test
                 try:
                     print("test the check box and wait")
                     recaptcha_9x9=driver.find_element(By.XPATH,'/html/body/div[2]/div[2]/iframe')
                     driver.switch_to.frame(recaptcha_9x9)
                     driver.find_element(By.ID, 'recaptcha-verify-button').click()
-       
                     driver.switch_to.default_content()
                 except:
                     time.sleep(5)
                     driver.switch_to.parent_frame()
-                    
-                
             except:
                 pass
             time.sleep(4)
+            
+            # hit the submit button
             driver.find_element(By.CLASS_NAME,'btn.btn-primary').click()
             driver.switch_to.default_content()
             driver.find_element(By.CLASS_NAME,'fancybox-item.fancybox-close').click()
@@ -76,12 +78,15 @@ def main():
         
 
 website_list=read_file('lottery_website.txt')   
-# website_list=read_file('test.txt')   
 accounts_info=read_file('accounts.txt')
-driver = uc.Chrome() 
-main()
+print("finished reading the files")
 
-    
+options = uc.ChromeOptions()
+options.add_argument("--headless=new") # Runs Chrome in headless mode.
+driver = uc.Chrome(version_main=113,options=options) # the version_main is the current version of chrome.
+
+if __name__ == "__main__":
+    main()
     
 
     # location = check_mark.location
