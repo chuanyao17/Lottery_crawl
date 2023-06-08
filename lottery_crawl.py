@@ -1,6 +1,7 @@
 import time
 import undetected_chromedriver as uc
 import json
+import selenium
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver import ActionChains
@@ -65,11 +66,13 @@ def apply_lottery(account):
             driver.find_element(By.CLASS_NAME,'btn.btn-primary').click()
             driver.switch_to.default_content()
             driver.find_element(By.CLASS_NAME,'fancybox-item.fancybox-close').click()
+    print("finished current website")
             
 def main():
     for website in website_list:
         print(website)
         driver.get(website)
+        print("loading website--")
         time.sleep(5)
         driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
         time.sleep(1)
@@ -79,11 +82,16 @@ def main():
 
 website_list=read_file('lottery_website.txt')   
 accounts_info=read_file('accounts.txt')
+print("uc version",uc.__version__)
+print("selenium",selenium.__version__)
 print("finished reading the files")
 
 options = uc.ChromeOptions()
-options.add_argument("--headless=new") # Runs Chrome in headless mode.
-driver = uc.Chrome(version_main=113,options=options) # the version_main is the current version of chrome.
+options.add_argument("--headless")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
+driver = uc.Chrome(version_main=114,options=options) # the version_main is the current version of chrome.
+
 
 if __name__ == "__main__":
     main()
