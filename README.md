@@ -7,6 +7,12 @@ Auto applying for the lottery at BROADWAY DIRECT.
  - `undetected_chromedriver`
  - `selenium`
 
+### The environment I was using:
+
+- `Python 3.7.8`
+- `undetected_chromedriver 3.4.7`
+- `selenium 4.9.1`
+- `Chrome 114`
 
 ### Before running this program in Python, 
 ~~1. Create an account at https://broadwaydirect.com/~~
@@ -18,5 +24,6 @@ Auto applying for the lottery at BROADWAY DIRECT.
 ### Warning
 The ReCaptcha detected feature was only tested when applying the Lion King.(The checkbox can be confirmed automatically)\
 However, if the 3x3  image identification came out, you would have to handle it manually.
+I was working on skipping applying the Lottery of the Lion King when the 3x3  image identification came out.
 
 
