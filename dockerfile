@@ -1,21 +1,34 @@
-# 使用 Python 3.7.8 作為基礎映像
-FROM public.ecr.aws/lambda/python:3.7
+# Define custom function directory
+ARG FUNCTION_DIR="/function"
 
-# 將當前目錄的內容複製到容器的 /var/task 目錄下
-COPY . /var/task
+FROM python:3.7.8 as build-image
 
-# 在 Docker 映像中安裝所需的套件
-RUN pip install selenium==4.9.1 undetected-chromedriver==3.4.7
+# Include global arg in this stage of the build
+ARG FUNCTION_DIR
 
-# 安裝 Chrome 瀏覽器及驅動程式
-RUN curl https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-    echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
-    apt-get update && \
-    apt-get install -y google-chrome-stable
+# Copy function code
+RUN mkdir -p ${FUNCTION_DIR}
+COPY . ${FUNCTION_DIR}
 
-# 設置 Chrome 選項
-ENV CHROME_BIN=/usr/bin/google-chrome-stable
-ENV CHROME_DRIVER=/usr/local/bin/chromedriver
+# Install the function's dependencies
+RUN pip install \
+    --target ${FUNCTION_DIR} \
+        awslambdaric \
+        selenium==4.9.1 \
+        undetected-chromedriver==3.4.7
 
-# 將啟動指令設置為我們的 Python 腳本
-CMD [ "lottery_crawl.handler" ]
+# Use the same Python 3.7.8 image as the base image
+FROM python:3.7.8
+
+# Include global arg in this stage of the build
+ARG FUNCTION_DIR
+# Set working directory to function root directory
+WORKDIR ${FUNCTION_DIR}
+
+# Copy in the built dependencies from the build-image stage
+COPY --from=build-image ${FUNCTION_DIR} ${FUNCTION_DIR}
+
+# Set runtime interface client as default command for the container runtime
+ENTRYPOINT [ "/usr/local/bin/python", "-m", "awslambdaric" ]
+# Pass the name of the function handler as an argument to the runtime
+CMD [ "lambda_function.handler" ]
