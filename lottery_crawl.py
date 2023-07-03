@@ -1,22 +1,19 @@
 import time
-import undetected_chromedriver as uc
 import json
 import selenium
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver import ActionChains
-
+import undetected_chromedriver as uc
 
 def read_file(file_location):
-    file=open(file_location)
-    js = json.loads(file.read())
-    file.close()
+    with open(file_location) as file:
+        js = json.load(file)
     return js
 
-
-def apply_lottery(account):
-    first_name,last_name,email,month,day,year=account.values()
-    print(first_name,last_name,email,month,day,year)
+def apply_lottery(account, driver):
+    first_name, last_name, email, month, day, year = account.values()
+    print(first_name, last_name, email, month, day, year)
     
     # find the valid entry only for the desktop
     for desktop in driver.find_elements(By.CLASS_NAME,'row.lotteries-row.hide-for-tablets.show-for-desktop'):
@@ -67,8 +64,8 @@ def apply_lottery(account):
             driver.switch_to.default_content()
             driver.find_element(By.CLASS_NAME,'fancybox-item.fancybox-close').click()
     print("finished current website")
-            
-def main():
+
+def main(website_list, accounts_info, driver):
     for website in website_list:
         print(website)
         driver.get(website)
@@ -77,29 +74,18 @@ def main():
         driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
         time.sleep(1)
         for account in accounts_info:
-            apply_lottery(account)
-        
+            apply_lottery(account, driver)
 
-website_list=read_file('lottery_website.txt')   
-accounts_info=read_file('accounts.txt')
-print("uc version",uc.__version__)
-print("selenium",selenium.__version__)
-print("finished reading the files")
-
-options = uc.ChromeOptions()
-options.add_argument("--headless")
-options.add_argument("--no-sandbox")
-options.add_argument("--disable-dev-shm-usage")
-driver = uc.Chrome(version_main=114,options=options) # the version_main is the current version of chrome.
-
-
-if __name__ == "__main__":
-    main()
+def handler(event, context):
+    website_list = read_file('lottery_website.txt')
+    accounts_info = read_file('accounts.txt')
     
+    options = uc.ChromeOptions()
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    driver = uc.Chrome(version_main=114,options=options)
+    
+    main(website_list, accounts_info, driver)
 
-    # location = check_mark.location
-    # size = check_mark.size
-    # w, h = size['width'], size['height']
-    # print(location)
-    # print(size)
-    # print(w, h)
+handler(None, None)
