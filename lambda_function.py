@@ -1,6 +1,5 @@
 import time
 import json
-import selenium
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver import ActionChains
@@ -67,9 +66,12 @@ def apply_lottery(account, driver):
 
 def main(website_list, accounts_info, driver):
     for website in website_list:
-        print(website)
         driver.get(website)
         print("loading website--")
+        title = driver.title
+        print("current website title:", title)
+        current_url = driver.current_url
+        print("current website URL:", current_url)
         time.sleep(5)
         driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
         time.sleep(1)
@@ -79,13 +81,17 @@ def main(website_list, accounts_info, driver):
 def handler(event, context):
     website_list = read_file('lottery_website.txt')
     accounts_info = read_file('accounts.txt')
+    print("finished reading files")
     
     options = uc.ChromeOptions()
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    driver = uc.Chrome(version_main=114,options=options)
+    driver = uc.Chrome(options=options)
+    print("finished loading the driver")
     
+    print("Starting the process")
     main(website_list, accounts_info, driver)
+    print("Finished the process")
 
-handler(None, None)
+# handler(None, None)
