@@ -1,44 +1,22 @@
-# Define custom function directory
-ARG FUNCTION_DIR="/function"
+FROM public.ecr.aws/lambda/python:3.8
 
-FROM python:3.7.8 as build-image
+COPY requirements.txt /tmp/
+COPY install-chrome.sh /tmp/
 
-# Include global arg in this stage of the build
-ARG FUNCTION_DIR
+# install chrome dependecies
+RUN yum install unzip atk at-spi2-atk gtk3 cups-libs pango libdrm \ 
+    libXcomposite libXcursor libXdamage libXext libXtst libXt \
+    libXrandr libXScrnSaver alsa-lib -y
 
-# Copy function code
-RUN mkdir -p ${FUNCTION_DIR}
-COPY . ${FUNCTION_DIR}
+# Install chromium, chrome-driver
+RUN /usr/bin/bash /tmp/install-chrome.sh
 
-# Install the function's dependencies
-RUN pip install --target ${FUNCTION_DIR} selenium==4.9.1 undetected-chromedriver==3.4.7 awslambdaric
+# Install Python dependencies for function
+RUN pip install --upgrade pip -q
+RUN pip install -r /tmp/requirements.txt -q
 
-# Use a slim version of the base Python image to reduce the final image size
-FROM python:3.7.8
+# Remove unused packages
+RUN yum remove unzip -y
 
-# Include global arg in this stage of the build
-ARG FUNCTION_DIR
-
-# Set working directory to function root directory
-WORKDIR ${FUNCTION_DIR}
-
-# Copy in the built dependencies
-COPY --from=build-image ${FUNCTION_DIR} ${FUNCTION_DIR}
-
-# Install Chrome 
-RUN apt-get update && apt-get install -y wget gnupg2 && \
-    wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list && \
-    apt-get update && apt-get install -y google-chrome-stable && \
-    rm -rf /var/lib/apt/lists/*
-
-# Install Chrome driver
-RUN wget -q -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE)/chromedriver_linux64.zip && \
-    unzip /tmp/chromedriver.zip -d /usr/local/bin/ && \
-    rm /tmp/chromedriver.zip
-
-# Set runtime interface client as default command for the container runtime
-ENTRYPOINT [ "/usr/local/bin/python", "-m", "awslambdaric" ]
-
-# Pass the name of the function handler as an argument to the runtime
-CMD [ "lambda_function.handler" ]
+COPY lambda_function.py accounts.txt lottery_website.txt /var/task/
+CMD [ "lambda_function.lambda_handler" ] 

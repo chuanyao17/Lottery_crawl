@@ -1,19 +1,21 @@
 # Lottery_crawl
 Auto applying for the lottery at BROADWAY DIRECT.
 
-## This branch is for containerizing the program to be deployed on the aws lambda.
+## This branch is for deploying Lambda functions with docker images.
 
 ### The repository has the following requirements:
 
- - `undetected_chromedriver`
- - `selenium`
- - `Chrome&Chrome driver`
+Please check the dockerfile directly.
+
+ ~~- `undetected_chromedriver`~~
+ ~~- `selenium`~~
+ ~~- `Chrome&Chrome driver`~~
 
 ### The environment I was using:
 
-- `Python 3.7.8`
-- `undetected_chromedriver 3.4.7`
-- `selenium 4.9.1`
+~~- `Python 3.7.8`~~
+~~- `undetected_chromedriver 3.4.7`~~
+~~- `selenium 4.9.1`~~
 
 
 ### Before running this program in Python, 
