@@ -34,10 +34,12 @@ def apply_lottery(account, driver):
                 WebDriverWait(driver, 10).until(
                     EC.element_to_be_clickable((By.CLASS_NAME, 'btn.btn-primary.enter-button.enter-lottery-link'))
                 )
+                print("after checking, ready to click the entry button")
+                button.click()
             except:
                 print("no entry found")
-            print("after checking, ready to click the entry button")
-            button.click()
+            # print("after checking, ready to click the entry button")
+            # button.click()
             time.sleep(1)
             print("clicked the entry button")
             driver.switch_to.frame(driver.find_element(By.CLASS_NAME,'fancybox-iframe'))
@@ -66,6 +68,11 @@ def apply_lottery(account, driver):
                 driver.switch_to.frame(recaptcha)
                 driver.find_element(By.CLASS_NAME,'recaptcha-checkbox-border').click()
                 print("finished clicked first recaptcha box")
+                print("loading website--")
+                title = driver.title
+                print("current website title:", title)
+                current_url = driver.current_url
+                print("current website URL:", current_url)
                 
                 # try to skip the second recaptcha for 9x9 image test
                 try:
@@ -76,16 +83,13 @@ def apply_lottery(account, driver):
                     driver.find_element(By.CLASS_NAME,'fancybox-item.fancybox-close').click()
                     print("closed the current entry because of recptcha 9x9")
                     continue
-                    # driver.switch_to.frame(recaptcha_9x9)
-                    # driver.find_element(By.ID, 'recaptcha-verify-button').click()
-                    # print("finshed clicked second recaptcha")
-                    # driver.switch_to.default_content()
                 except:
                     time.sleep(2)
                     # check if I have back to upper frame
-                    # driver.switch_to.parent_frame()
                     driver.switch_to.default_content()
-                    driver.switch_to.frame(driver.find_element(By.CLASS_NAME,'fancybox-iframe'))
+                    entry_frame=driver.find_element(By.CLASS_NAME,'fancybox-iframe')
+                    print("found entry frame", entry_frame)
+                    driver.switch_to.frame(entry_frame)
                     print("no recaptcha 9x9 test found")
                     
             except:
@@ -105,7 +109,11 @@ def apply_lottery(account, driver):
                 WebDriverWait(driver, 10).until(
                     EC.element_to_be_clickable((By.CLASS_NAME, 'btn.btn-primary'))
                 )
-                element.click()
+                print("after checking, ready to click the final entry button")
+                # element.click()
+                # driver.find_element(By.CLASS_NAME,'btn.btn-primary').click()
+                last_button = driver.find_element(By.CLASS_NAME, 'btn.btn-primary')
+                driver.execute_script("arguments[0].click();", last_button)
                 print("submitted the enrtry")
             except:
                 print("failed to submitt the entry")
