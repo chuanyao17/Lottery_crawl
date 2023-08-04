@@ -11,6 +11,7 @@ from selenium_stealth import stealth
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+import difflib
 
 def read_file(file_location):
     with open(file_location) as file:
@@ -42,8 +43,18 @@ def apply_lottery(account, driver):
             # button.click()
             time.sleep(1)
             print("clicked the entry button")
-            driver.switch_to.frame(driver.find_element(By.CLASS_NAME,'fancybox-iframe'))
-            time.sleep(1)
+            
+            fancybox=driver.find_element(By.CLASS_NAME,'fancybox-iframe')
+            driver.switch_to.frame(fancybox)
+            print("switched to the fancybox frame")
+            try:
+                WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.ID,'dlslot_name_first'))
+                )
+                print("after checking, ready to fill the entry form")
+         
+            except:
+                print("no first name slot found")
             driver.find_element(By.ID,'dlslot_name_first').send_keys(first_name)
             driver.find_element(By.ID,'dlslot_name_last').send_keys(last_name)
             driver.find_element(By.ID,'dlslot_ticket_qty').send_keys('2')
@@ -66,13 +77,26 @@ def apply_lottery(account, driver):
                 recaptcha=driver.find_element(By.XPATH,'//*[@id="post-81"]/div/form/fieldset/div[1]/div/div/iframe')
                 print("found first recaptcha box",recaptcha)
                 driver.switch_to.frame(recaptcha)
+                
+                recaptcha_spinner = driver.find_element(By.CLASS_NAME, 'recaptcha-checkbox-spinner')
+                html_before_click = recaptcha_spinner.get_attribute("outerHTML")
+                print(html_before_click )
                 driver.find_element(By.CLASS_NAME,'recaptcha-checkbox-border').click()
+                
+                time.sleep(1)
+                html_after_click = recaptcha_spinner.get_attribute("outerHTML")
+                print(html_after_click)
+                if html_before_click != html_after_click:
+                    print("The recaptcha checkbox has been clicked successfully.")
+                else:
+                    print("The recaptcha checkbox has not been clicked or the page did not react to the click.")
+                
                 print("finished clicked first recaptcha box")
-                print("loading website--")
-                title = driver.title
-                print("current website title:", title)
-                current_url = driver.current_url
-                print("current website URL:", current_url)
+                # print("loading website--")
+                # title = driver.title
+                # print("current website title:", title)
+                # current_url = driver.current_url
+                # print("current website URL:", current_url)
                 
                 # try to skip the second recaptcha for 9x9 image test
                 try:
@@ -112,14 +136,45 @@ def apply_lottery(account, driver):
                 print("after checking, ready to click the final entry button")
                 # element.click()
                 # driver.find_element(By.CLASS_NAME,'btn.btn-primary').click()
+                print(driver.find_element(By.ID,'dlslot_name_first').get_attribute('value'))
+                print(driver.find_element(By.ID,'dlslot_ticket_qty').get_attribute('value'))
+                print(driver.find_element(By.ID,'dlslot_dob_year').get_attribute('value'))
+                print(driver.find_element(By.ID,'dlslot_zip').get_attribute('value'))
+                print(driver.find_element(By.ID,'dlslot_country').get_attribute('value'))
+                # if check_mark.is_selected():
+                #     print("Checkbox is checked")
+                # else:
+                #     print("Checkbox is not checked")
+                # source_before_click = driver.page_source
+                
+                print("===============================================")
+                print(driver.page_source)
+                #for lion king check if really submitted the form
                 last_button = driver.find_element(By.CLASS_NAME, 'btn.btn-primary')
                 driver.execute_script("arguments[0].click();", last_button)
+                
+                # 接下來測試分別拿掉check box 和 recaptcha看結果
+                
+                
+                time.sleep(5)
+                # source_after_click = driver.page_source
+                
+                # d = difflib.Differ()
+                # diff = d.compare(source_before_click.splitlines(), source_after_click.splitlines())
+
+                # # 打印差异
+                # print('\n'.join([line for line in diff if line.startswith('+ ')]))
+                print("===============================================")
+                print(driver.page_source)
+                print("===============================================")
                 print("submitted the enrtry")
-            except:
+            except Exception as e:
                 print("failed to submitt the entry")
+                print(f"Error: {e}")
             time.sleep(1)
             driver.switch_to.default_content()
             driver.find_element(By.CLASS_NAME,'fancybox-item.fancybox-close').click()
+            
             print("finished one entry")
     print("finished current website", driver.current_url)
 
@@ -144,7 +199,7 @@ def lambda_handler(event, context):
     print("finished reading files")
     
     chrome_options = ChromeOptions()
-    chrome_options.add_argument('--headless')
+    # chrome_options.add_argument('--headless')
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--disable-gpu")
@@ -157,12 +212,16 @@ def lambda_handler(event, context):
     chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
     chrome_options.add_experimental_option('useAutomationExtension', False)
     
-    
+    # chromium and driver for the docker image
     chrome_options.binary_location = '/opt/chromium/chrome'
     service = Service(executable_path="/opt/chromedriver/chromedriver")
     
+    # if you want to test the program with Windows google chrome (the command line for running the program is py .\lambda_function.py), 
+    # please comment the above two line of codes and use the following two line of codes instead
+    
     # chrome_options.binary_location = 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe'
     # service = Service(executable_path="C:\\Users\\Yao\\Desktop\\uc_test\\selenium_test\\selenium_chromium")
+ 
 
     driver = webdriver.Chrome(
         service=service,
@@ -180,4 +239,4 @@ def lambda_handler(event, context):
     print("Starting the process")
     main(website_list, accounts_info, driver)
     print("Finished the process")
-# lambda_handler(None, None)
+lambda_handler(None, None)

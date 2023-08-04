@@ -1,4 +1,3 @@
-[
-"https://lottery.broadwaydirect.com/show/six-ny/",
+["https://lottery.broadwaydirect.com/show/six-ny/",
 "https://lottery.broadwaydirect.com/show/wicked/",
 "https://lottery.broadwaydirect.com/show/the-lion-king/"]
