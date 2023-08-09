@@ -81,9 +81,22 @@ def apply_lottery(account, driver):
                 recaptcha_spinner = driver.find_element(By.CLASS_NAME, 'recaptcha-checkbox-spinner')
                 html_before_click = recaptcha_spinner.get_attribute("outerHTML")
                 print(html_before_click )
-                driver.find_element(By.CLASS_NAME,'recaptcha-checkbox-border').click()
                 
-                time.sleep(1)
+                #check <div class="recaptcha-checkbox-checkmark" role="presentation" style=""></div>
+                recaptcha_checkbox=driver.find_element(By.CLASS_NAME, 'recaptcha-checkbox-checkmark')
+                recaptcha_checkbox_html_before_click=recaptcha_checkbox.get_attribute("outerHTML")
+                print("!!!!!!!!! Checking recaptcha check box html before clicking",recaptcha_checkbox_html_before_click)
+                
+                #click recaptcha
+                driver.find_element(By.CLASS_NAME,'recaptcha-checkbox-border').click()
+                #wait for the recaptcha connection
+                time.sleep(10)
+                
+                #check the html of the recaptcha
+                recaptcha_checkbox_after_sleep=driver.find_element(By.CLASS_NAME, 'recaptcha-checkbox-checkmark')
+                recaptcha_checkbox_html_before_click_after_sleep=recaptcha_checkbox_after_sleep.get_attribute("outerHTML")
+                print("###### Checking recaptcha check box html after clicking",recaptcha_checkbox_html_before_click_after_sleep)
+                
                 html_after_click = recaptcha_spinner.get_attribute("outerHTML")
                 print(html_after_click)
                 if html_before_click != html_after_click:
@@ -146,7 +159,8 @@ def apply_lottery(account, driver):
                 # else:
                 #     print("Checkbox is not checked")
                 # source_before_click = driver.page_source
-                
+                final_recaptcha_test = recaptcha_spinner.get_attribute("outerHTML")
+                print(final_recaptcha_test)
                 print("===============================================")
                 print(driver.page_source)
                 #for lion king check if really submitted the form
