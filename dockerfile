@@ -1,25 +1,23 @@
-# Use Python 3.7.8 as the base image
-FROM python:3.7.8
+FROM public.ecr.aws/lambda/python:3.8
 
-# Set the working directory
-WORKDIR /app
+COPY requirements.txt /tmp/
+COPY install-chrome.sh /tmp/
 
-# Copy the contents of the current directory to the /app directory in the container
-COPY . /app
+# install chrome dependecies
+RUN yum install unzip atk at-spi2-atk gtk3 cups-libs pango libdrm \ 
+    libXcomposite libXcursor libXdamage libXext libXtst libXt \
+    libXrandr libXScrnSaver alsa-lib -y
 
-# Install the required packages in the Docker image
-RUN pip install selenium==4.9.1 undetected-chromedriver==3.4.7
+# Install chromium, chrome-driver
+RUN /usr/bin/bash /tmp/install-chrome.sh
 
-# Install the Chrome browser
-RUN apt-get update && apt-get install -y wget
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
-RUN echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
-RUN apt-get update && apt-get install -y google-chrome-stable
+# Install Python dependencies for function
+RUN pip install --upgrade pip -q
+RUN pip install -r /tmp/requirements.txt -q
 
-# Set up Chrome options
-ENV CHROME_BIN=/usr/bin/google-chrome-stable
-ENV CHROME_DRIVER=/usr/local/bin/chromedriver
+# Remove unused packages
+RUN yum remove unzip -y
 
+COPY lambda_function.py accounts.txt lottery_website.txt /var/task/
+CMD [ "lambda_function.lambda_handler" ] 
 
-# Run the program
-CMD ["bash", "-c", "if [[ -z \"$DEBUG\" ]]; then python ./lottery_crawl.py; else /bin/bash; fi"]
