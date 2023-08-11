@@ -12,16 +12,18 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
+from .lottery_website import lottery_url
+
 
 def read_file(file_location):
     with open(file_location) as file:
         js = json.load(file)
     return js
 
+
 def apply_lottery(account, driver):
     first_name, last_name, email, month, day, year = account.values()
-    print(first_name, last_name, email, month, day, year)
-    
+    print(first_name, last_name, email, month, day, year)    
     # find the valid entry only for the desktop
     for desktop in driver.find_elements(By.CLASS_NAME,'row.lotteries-row.hide-for-tablets.show-for-desktop'):
         print("first loop")
